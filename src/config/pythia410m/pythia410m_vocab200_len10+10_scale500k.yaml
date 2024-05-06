@@ -1,0 +1,146 @@
+# lightning.pytorch==2.1.0dev
+fit:
+  seed_everything: 2498463217
+  trainer:
+    accelerator: auto
+    strategy: auto
+    devices: auto
+    num_nodes: 1
+    precision: 16-mixed
+    logger: null
+    callbacks:
+      - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+        init_args:
+          monitor: train_loss # val_loss
+      - class_path: lightning.pytorch.callbacks.EarlyStopping
+        init_args:
+          patience: 5
+          monitor: train_loss
+    fast_dev_run: false
+    max_epochs: 200
+    min_epochs: null
+    max_steps: -1
+    min_steps: null
+    max_time: null
+    limit_train_batches: null
+    limit_val_batches: null
+    limit_test_batches: null
+    limit_predict_batches: null
+    overfit_batches: 0.0
+    val_check_interval: null
+    check_val_every_n_epoch: 1
+    num_sanity_val_steps: null
+    log_every_n_steps: 50
+    enable_checkpointing: null
+    enable_progress_bar: null
+    enable_model_summary: null
+    accumulate_grad_batches: 16
+    gradient_clip_val: null
+    gradient_clip_algorithm: null
+    deterministic: null
+    benchmark: null
+    inference_mode: true
+    use_distributed_sampler: true
+    profiler: null
+    detect_anomaly: false
+    barebones: false
+    plugins: null
+    sync_batchnorm: false
+    reload_dataloaders_every_n_epochs: 0
+    default_root_dir: /shared/nas2/yujiz/llm_entropy/lightning/pythia-410m/vocab200_len10+10_scale500k # zephyr-7b-alpha
+  model:
+    model_name: EleutherAI/pythia-410m-deduped # HuggingFaceH4/zephyr-7b-alpha
+    optimizer_lr: 1.0e-05
+    optimizer_lr_min_decay: 0.1
+    warmup_steps: 0 # 600
+    warmup_total_steps: 10000
+    do_sample: true
+    temperature: 0.5
+    num_return_sequences: 1
+    max_new_tokens: 100
+    min_new_tokens: 1
+  data:
+    keys: query_prefix:0,query:0,text_prefix:0,text:1
+    data_dir: ./data/
+    batch_size: 96 # 1
+    seq_len: 1024
+    tokenizer_name: EleutherAI/pythia-410m-deduped # HuggingFaceH4/zephyr-7b-alpha
+    concat_samples: false
+    randomize_max_position: -1 # 2048
+    num_workers: 32
+  ckpt_path: null
+# validation:
+#   model:
+#     model_name: microsoft/phi-2 # HuggingFaceH4/zephyr-7b-alpha
+predict:
+  seed_everything: 2498463217
+  trainer:
+    accelerator: auto
+    strategy: fsdp
+    devices: auto
+    num_nodes: 1
+    precision: 32-true
+    logger: null
+    callbacks:
+      - class_path: utils.CustomWriter
+        init_args:
+          output_dir: ./outputs/pythia-410m/vocab200_len10+10_scale500k 
+          write_interval: epoch
+          model_name: EleutherAI/pythia-410m-deduped # HuggingFaceH4/zephyr-7b-alpha
+    fast_dev_run: false
+    max_epochs: null
+    min_epochs: null
+    max_steps: -1
+    min_steps: null
+    max_time: null
+    limit_train_batches: null
+    limit_val_batches: null
+    limit_test_batches: null
+    limit_predict_batches: null
+    overfit_batches: 0.0
+    val_check_interval: null
+    check_val_every_n_epoch: 1
+    num_sanity_val_steps: null
+    log_every_n_steps: 50
+    enable_checkpointing: null
+    enable_progress_bar: null
+    enable_model_summary: null
+    accumulate_grad_batches: 8
+    gradient_clip_val: null
+    gradient_clip_algorithm: null
+    deterministic: null
+    benchmark: null
+    inference_mode: true
+    use_distributed_sampler: true
+    profiler: null
+    detect_anomaly: false
+    barebones: false
+    plugins: null
+    sync_batchnorm: false
+    reload_dataloaders_every_n_epochs: 0
+    default_root_dir: /shared/nas2/yujiz/llm_entropy/lightning/pythia-410m/vocab200_len10+10_scale500k  # zephyr-7b-alpha
+  model:
+    model_name: EleutherAI/pythia-410m-deduped # HuggingFaceH4/zephyr-7b-alpha
+    optimizer_lr: 1.0e-05
+    optimizer_lr_min_decay: 0.1
+    warmup_steps: 600
+    warmup_total_steps: 10000
+    do_sample: true
+    temperature: 0.2
+    num_return_sequences: 1
+    max_new_tokens: 32
+    min_new_tokens: 1
+    load_pretrained: false
+  data:
+    keys: query_prefix:0,query:0,text_prefix:0
+    data_dir: ./data/
+    batch_size: 96 #
+    seq_len: 1024
+    tokenizer_name: EleutherAI/pythia-410m-deduped # HuggingFaceH4/zephyr-7b-alpha
+    concat_samples: false
+    randomize_max_position: -1 # 2048
+    num_workers: 32
+  return_predictions: null
+  # ckpt_path: /shared/nas2/yujiz/llm_entropy/lightning/pythia-410m/vocab200_len10+10_scale500k/lightning_logs/version_2/checkpoints/epoch=149-step=48900.ckpt
+
+
